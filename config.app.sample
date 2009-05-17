@@ -1,0 +1,4 @@
+# rename this file to config.app and remove this line
+username:put_your_username_here
+password:put_your_password_here
+testing:true_or_false

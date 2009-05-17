@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Get Encouragement</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="description" content="Share encouraging quotes and thoughts, get encouragement when you need it. (From Ruzuku.com)" />
+	<link rel="alternate" type="application/rss+xml" title="Get Encouraged (RSS)" href="http://twitter.com/statuses/user_timeline/20616435.rss" />
+	<link rel="alternate" type="application/atom+xml" title="Get Encouraged (Atom)" href="http://twitter.com/statuses/user_timeline/20616435.atom" />
+	<link rel="stylesheet" type="text/css" href="/css/encouragement.css" />
+	<link rel="stylesheet" type="text/css" href="/facebox/facebox.css" />
+	<script src="/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/js/jquery.cycle.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/facebox/facebox.js" type="text/javascript"></script>
+	<script type="text/javascript" charset="utf-8">
+
+	$(document).ready(function(){
+		/* Setup the help dialog */
+		$('a[rel*=facebox]').facebox();
+		/* Setup the slideshow (using http://www.malsup.com/jquery/cycle/) */
+		$('#quotes').cycle({ 
+			fx: 		'fade', 
+			speed: 		1000,
+			timeout: 	7500,
+			next: 		'#quotes-next',
+			prev: 		'#quotes-prev',
+			pause: 		1
+		 });	
+	});
+	</script>
+</head>
+
+<body>
+
+<div id="body">
+	
+	<div id="header">
+		<h1>get encouraged</h1>
+		<div id="header-links">
+			<a href="#help" rel="facebox" class="alpha">add a quote</a><br />
+			<a href="http://twitter.com/getencouraged" class="alpha">visit twitter &rarr;</a>
+		</div>
+	</div>
+
+	<div id="help" style="display:none;">
+		<h2>How Does This Work?</h2>
+		<p><b>Get Encouraged</b> lets you share encouraging quotes with others via Twitter. All you have to do is follow <a href="http://twitter.com/getencouraged">Get Encouraged on Twitter</a>, then send us a message using <code>@getencouraged</code>. We'll post your quote on the Get Encouraged Twitter page and you'll be able to see it here as well.</p>
+		<h2>Examples</h2>
+		<blockquote>@getencouraged "Your future is as bright as the bulb you put in it." - Anonymous</blockquote>
+		<blockquote>@getencouraged Your future is as bright as the bulb you put in it.</blockquote>
+		<blockquote>@getencouraged via @mmzyk83 Your future is as bright as the bulb you put in it.</blockquote>
+		<p>Don't forget to visit <a href="http://encourage.ruzuku.com">Get Encouraged</a> to see the encouraging quotes others have shared.</p>
+	</div>
+
+	<ul id="quotes">
+		<% @reply_array.each do |r| %>
+			<li>
+				<div class="triangle"></div>
+				<a href="http://twitter.com/<%= r['user'] %>"><img class="quote-img" src="<%= r['image_url'] %>" /></a>
+				<div class="quote-body">
+					<%= r['text'] %>
+					<div class="quote-meta">from <a href="http://twitter.com/<%= r['user'] %>"><%= r['user'] %></a> on <a href="http://twitter.com/<%= r['user'] %>/status/<%= r['id'] %>"><%= r['timestamp'] %></a></div>
+				</div>
+			</li> 		
+		<% end	%>
+	</ul>
+	
+	<div id="footer">
+		<div id="powered-by">brought to you by<br /><a href="http://ruzuku.com"><img src="/img/logo.png" alt="Ruzuku Logo" /></a></div>
+		<div id="quotes-nav">
+			<a id="quotes-prev" href="#">&larr; previous</a>
+			<a id="quotes-next" href="#">next &rarr;</a>
+		</div>
+	</div>
+	<div id="rss-feed"><a href="http://twitter.com/statuses/user_timeline/20616435.rss"><img src="/img/feed.png" alt="RSS Feed" /></a></div>
+	<!-- AddThis Button BEGIN -->
+	<script type="text/javascript">var addthis_pub="jacksonfox";</script>
+	<a href="http://www.addthis.com/bookmark.php?v=20" onmouseover="return addthis_open(this, '', '[URL]', '[TITLE]')" onmouseout="addthis_close()" onclick="return addthis_sendto()"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/200/addthis_widget.js"></script>
+	<!-- AddThis Button END -->
+</div>
+<% if !@testing %>
+	<!-- Add Analytics Code Here -->
+<% end %>
+</body>
+</html>

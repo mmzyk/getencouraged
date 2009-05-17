@@ -1,0 +1,131 @@
+body {
+	font-family: helvetica, arial, sans-serif;
+	font-size: .75em;
+	line-height: 1.5em;
+	background: #000312;
+}
+
+img {
+	border: none;
+}
+
+#body {
+	width: 500px;
+	margin: 0px auto;
+}
+
+h1 {
+	font-size: 4em;
+	line-height: 1.13em;
+}
+
+#header {
+	overflow: hidden;
+	position: relative;
+	margin: 3em 0px;
+}
+
+#header h1 {
+	float: left;
+	display: inline;
+	margin: 0px;
+}
+
+#header-links {
+	float: right;
+	width: 120px;
+	line-height: 1.5em;
+	margin-top: .75em;
+}
+
+#header a {
+	font-size: 10px;
+	color: #aaa;
+}
+
+#quotes {
+	font-size: 1.5em;
+	line-height: 1.33em;
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+	position: relative;
+	width: 500px;
+}
+
+#quotes li {
+	position: absolute;
+	background-color: #fff;
+	width: 500px;
+}
+
+.triangle {
+	font-size: 0px; line-height: 0%; width: 0px;
+	border-top: 20px solid #eee;
+	border-left: 20px solid #fff;
+	position: absolute;
+	left: 65px;
+	top: 20px;
+}
+
+.quote-body {
+	padding: 20px;
+	margin-left: 85px;
+	background: #eee;
+}
+
+.quote-body a {
+	color: #039;
+}
+
+.quote-meta {
+	color: #aaa;
+	font-size: .67em;
+	line-height: 1.5em;
+	margin-top: 6px;
+}
+
+.quote-meta a {
+	color: #777;
+}
+
+.quote-img {
+	float: left;
+	border: 5px solid #eee;
+	height: 48px;
+	width: 48px;
+}
+
+#footer {
+	overflow: hidden;
+	margin: 1.5em 0px;
+}
+
+#quotes-nav {
+	float: right;
+}
+
+#quotes-nav a {
+	background: #000312;
+	text-decoration: none;
+	padding: 3px;
+	color: #fff;
+	font-size: 9px;
+}
+
+#help {
+	line-height: 1.5em;
+}
+
+#help code {
+	background: #eee;
+}
+
+#powered-by {
+	float: left;
+	color: #aaa;
+}
+
+#rss-feed {
+	float: right;
+}

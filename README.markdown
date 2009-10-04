@@ -2,7 +2,6 @@
 
 getencouraged is a simple twitter application that looks for @replies to an account and then retweets then from the account.  It also has a front end to display @replies sent to an account.
 
-***
 
 # Set up
 
@@ -17,7 +16,6 @@ Once the config.app is in place, use a cron job to run the repost script at a se
 
 The front end can be deployed and run with the Sinatra framework.  To do that, ensure you have Sinatra loaded and run getencouraged.rb.  You will likely want to modify the look and feel of the front end to fit your needs.
 
-***
 
 # Dependencies
 
@@ -33,7 +31,6 @@ For the front end:
 
 Sinatra
 
-***
 
 # License
 

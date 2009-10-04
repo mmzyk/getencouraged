@@ -8,8 +8,11 @@ getencouraged is a simple twitter application that looks for @replies to an acco
 Rename the config.app.sample file to config.app and fill in the needed parameters.
 
 username: the username of the account that should retweet the @replies sent to it
+
 password: the password for the account
+
 testing: if analytics code is placed in index.erb, this option can be used to turn it on or off for testing purposes
+
 number_to_tweet: this is the number of @replies that should be retweeted each time the script is run.  The default is -1, which retweets all @replies.
 
 Once the config.app is in place, use a cron job to run the repost script at a set interval and on that interval the @replies will be retweeted.
@@ -19,7 +22,7 @@ The front end can be deployed and run with the Sinatra framework.  To do that, e
 
 # Dependencies
 
-The twitter gem
+twitter gem
 
 For testing:
 
@@ -36,6 +39,7 @@ Sinatra
 # License
 
 Creative Commons Attribution 3.0
+
 See LICENSE.txt for further details
 
 

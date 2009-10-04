@@ -37,7 +37,7 @@ Sinatra
 
 # License
 
-Creative Commons 3.0
+Creative Commons Attribution 3.0
 See LICENSE.txt for further details
 
 ***

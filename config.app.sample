@@ -2,3 +2,4 @@
 username:put_your_username_here
 password:put_your_password_here
 testing:true_or_false
+number_to_tweet:Number_of_tweets_to_tweet_per_script_run #-1 retweets all replies 

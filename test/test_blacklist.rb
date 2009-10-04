@@ -1,5 +1,6 @@
 require 'blacklist'
 require 'test/unit'
+require 'mocha'
 
 class Test_Blacklist < Test::Unit::TestCase
     
@@ -96,7 +97,48 @@ class Test_Blacklist < Test::Unit::TestCase
       assert_equal eligible, false, 'Found to not be spam when it should not have been'
     end
       
-      
+    def test_read_blacklists
+      blacklist = Blacklist.new
+      File.open('test_reading_blacklists', "w"){ |file| file.puts('blacklisted') }
+      listArray = blacklist.read_list('test_reading_blacklists', [])
+      assert_equal listArray, ['blacklisted'], 'Did not received expected array from file io' 
+    end    
+    
+    def test_eligible_to_retweet
+      blacklist = Blacklist.new
+      blacklist.stubs(:check_if_spam).returns(true)
+      blacklist.stubs(:phrase_blacklisted).returns(true)
+      blacklist.stubs(:user_blacklisted).returns(true)
+      eligible = blacklist.eligible_to_retweet('test text', 'bob')
+      assert eligible, 'Did not received expected value'
+    end  
+    
+    def test_eligible_to_retweet
+      blacklist = Blacklist.new
+      blacklist.stubs(:check_if_spam).returns(false)
+      blacklist.stubs(:phrase_blacklisted).returns(true)
+      blacklist.stubs(:user_blacklisted).returns(true)
+      eligible = blacklist.eligible_to_retweet('test text', 'bob')
+      assert_equal eligible, false, 'Did not received expected value'
+    end
+    
+    def test_eligible_to_retweet
+      blacklist = Blacklist.new
+      blacklist.stubs(:check_if_spam).returns(true)
+      blacklist.stubs(:phrase_blacklisted).returns(false)
+      blacklist.stubs(:user_blacklisted).returns(true)
+      eligible = blacklist.eligible_to_retweet('test text', 'bob')
+      assert_equal eligible, false, 'Did not received expected value'
+    end
+    
+    def test_eligible_to_retweet
+      blacklist = Blacklist.new
+      blacklist.stubs(:check_if_spam).returns(true)
+      blacklist.stubs(:phrase_blacklisted).returns(true)
+      blacklist.stubs(:user_blacklisted).returns(false)
+      eligible = blacklist.eligible_to_retweet('test text', 'bob')
+      assert_equal eligible, false, 'Did not received expected value'
+    end
       
 end        
 

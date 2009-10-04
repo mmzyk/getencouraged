@@ -14,7 +14,9 @@ class Configuration
         f.close
       end     
     end
-    configHash  
+    configHash = self.set_defaults(configHash)
+    configHash = self.convert_string_to_int(configHash)
+    configHash
   end
   
   def self.get_config_file
@@ -28,5 +30,21 @@ class Configuration
     end
     hash
   end  
+  
+  def self.set_defaults(hash)
+    if not hash.has_key? 'number_to_tweet'
+      hash['number_to_tweet'] = -1
+    end
+      
+    if not hash.has_key? 'testing'
+      hash['testing'] = false 
+    end
+    hash
+  end
+  
+  def self.convert_string_to_int(hash)
+    hash['number_to_tweet'] = hash['number_to_tweet'].to_i
+    hash
+  end
   
 end

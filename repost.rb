@@ -73,6 +73,6 @@ class Repost
 end
 
 if __FILE__ == $0
-  repost = new Repost
+  repost = Repost.new
   repost.repost_tweets
 end  

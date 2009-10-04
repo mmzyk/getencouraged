@@ -37,7 +37,6 @@ Sinatra
 Creative Commons Attribution 3.0
 See LICENSE.txt for further details
 
-***
 
 # Extraneous
 

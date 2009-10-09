@@ -1,9 +1,16 @@
 require 'rubygems'
 require 'twitter'
+require 'mongo'
+include Mongo
 require File.expand_path(File.join(File.dirname(__FILE__), 'configuration.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), 'blacklist.rb'))
 
 class Repost
+  
+  def initialize
+    @db = nil
+  end  
+  
   # What this class does: Hits the twitter api for the account specified and pulls the replies
   # sent to that account and retweets them, appling some new formatting, from the account
   # The class will write the id of the last reply to a file and check for the file
@@ -11,20 +18,50 @@ class Repost
   # so only replies since that id are returned
   # Author -- Mark Mzyk
   
+  #store the last id as it's own collection in mongo instead of in a flat file ...
+  
+  #should I insert a primary key factory (see mongo ruby driver on github) that uses tweet numbers?
+  #then I could look up by tweet number -> or a simpler thing to do would just to be a primary key factory that always increments by one
+  
+  def open_mongo
+    #if @db not nil
+    #  @db
+    #else  
+    #  @db = Connection.new.db('twitter_tweets') 
+  end  
+  
+  def open_id_collection
+    #if @ids not nil
+    #  @ids
+    #else
+    #  @ids = open_mongo.collection('ids')
+    #end
+  end  
   
   def read_last_id
-    last_id = nil
-    if File.exists?("idstore")
-      f = File.open("idstore", "r") 
-      last_id = f.readline
-    end
-    last_id
+    db = Connection.new.db('twitter_tweets')
+    ids = db.collection('ids')
+    
+    #this works, but a capped collection might be better, then the space remains constant
+    id = ids.find_one({}, :sort => [{'id' => -1}] )
+    
+    puts 'last id *****'
+    puts id['id']
+    puts ''
+    
+    id['id']
   end  
 
   def write_last_id(id)
-    File.open("idstore", "w") do |f|
-      f.puts id
-    end  
+    db = Connection.new.db('twitter_tweets')
+    ids = db.collection('ids')
+    ids.insert('id' => id)
+  end  
+
+  def write_tweets(tweet)
+    
+    # save tweets to mongodb
+    db = Connection.new.db('twitter_tweets')
   end  
 
   def get_replies(id, account)

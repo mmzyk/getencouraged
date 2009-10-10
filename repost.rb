@@ -1,9 +1,11 @@
 require 'rubygems'
 require 'twitter'
-require 'mongo'
-include Mongo
+
 require File.expand_path(File.join(File.dirname(__FILE__), 'configuration.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), 'blacklist.rb'))
+
+require 'mongo'
+include Mongo
 
 class Repost
   
@@ -11,37 +13,25 @@ class Repost
     @db = initialize_mongo
   end  
   
-  # What this class does: Hits the twitter api for the account specified and pulls the replies
-  # sent to that account and retweets them, appling some new formatting, from the account
-  # The class will write the id of the last reply to a file and check for the file
-  # each time the class is run, using the id it finds as a param to the twitter api
-  # so only replies since that id are returned
-  # Author -- Mark Mzyk
-  
-  #store the last id as it's own collection in mongo instead of in a flat file ...
-  
-  #should I insert a primary key factory (see mongo ruby driver on github) that uses tweet numbers?
-  #then I could look up by tweet number -> or a simpler thing to do would just to be a primary key factory that always increments by one
-  
   def initialize_mongo
     db = Connection.new.db('twitter_tweets') 
   end  
   
   def open_id_collection
-    ids = @db.collection('ids')
+    ids = @db.create_collection('ids', :capped => true, :size => 1024, :max => 1)
   end  
   
   def read_last_id
     ids = open_id_collection
+    id = ids.find_one
     
-    #this works, but a capped collection might be better, then the space remains constant
-    id = ids.find_one({}, :sort => [{'id' => -1}] )
+    last_id = nil
     
-    puts 'last id *****'
-    puts id['id']
-    puts ''
-    
-    id['id']
+    if id != nil
+      last_id = id['id']
+    end    
+      
+    last_id
   end  
 
   def write_last_id(id)
@@ -50,9 +40,7 @@ class Repost
   end  
 
   def save_tweets(tweet)
-    
     # save tweets to mongodb
-    #db = Connection.new.db('twitter_tweets')
   end  
 
   def get_replies(id, account)
@@ -82,10 +70,9 @@ class Repost
     blacklist = Blacklist.new
     replies = get_replies(id, account)
     retweets = get_replies_to_retweet(replies, config['number_to_tweet'])
-
-    # Twitter returns replies from newest to oldest, but want to retweet the oldest first
-    retweets.reverse!
-
+    
+    retweets.reverse! # Twitter returns replies from newest to oldest, but want to retweet the oldest first
+    
     retweets.each do |r|
       if blacklist.eligible_to_retweet(r.text, r.user.screen_name)
         text = blacklist.strip_username(r.text, config['username'])

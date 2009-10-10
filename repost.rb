@@ -93,7 +93,7 @@ class Repost
         save_tweet(tweet)
         account.update(text)
       end  
-      write_last_id(r.id)
+      write_last_id(tweet.id)
     end
     
   end  

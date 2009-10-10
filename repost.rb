@@ -21,9 +21,13 @@ class Repost
     ids = @db.create_collection('ids', :capped => true, :size => 1024, :max => 1)
   end  
   
+  def open_tweet_collection
+    tweets = @db.collection('tweets')
+  end  
+  
   def read_last_id
-    ids = open_id_collection
-    id = ids.find_one
+    ids_collection = open_id_collection
+    id = ids_collection.find_one
     
     last_id = nil
     
@@ -35,12 +39,13 @@ class Repost
   end  
 
   def write_last_id(id)
-    ids = open_id_collection
-    ids.insert('id' => id)
+    ids_collection = open_id_collection
+    ids_collection.insert('id' => id)
   end  
 
-  def save_tweets(tweet)
-    # save tweets to mongodb
+  def save_tweet(tweet)
+    tweet_collection = open_tweet_collection
+    tweet_collection << { :text => tweet.text, :user => tweet.user.screen_name, :id => tweet.id}
   end  
 
   def get_replies(id, account)
@@ -62,6 +67,13 @@ class Repost
     retweets
   end
 
+  def format_text(tweet_text, user_screen_name, config_username, blacklist)
+    text = blacklist.strip_username(tweet_text, config_username)
+    text = blacklist.strip_unwanted_phrases(text)
+    text << ' (@' + user_screen_name + ')'
+    text
+  end  
+
   def repost_tweets
     id = read_last_id
     config = Configuration.read_config
@@ -73,11 +85,10 @@ class Repost
     
     retweets.reverse! # Twitter returns replies from newest to oldest, but want to retweet the oldest first
     
-    retweets.each do |r|
-      if blacklist.eligible_to_retweet(r.text, r.user.screen_name)
-        text = blacklist.strip_username(r.text, config['username'])
-        text = blacklist.strip_unwanted_phrases(text)
-        text << ' (@' + r.user.screen_name + ')'
+    retweets.each do |tweet|
+      if blacklist.eligible_to_retweet(tweet.text, tweet.user.screen_name)
+        text = format_text(tweet.text, tweet.user.screen_name, config['username'], blacklist)
+        save_tweet(tweet)
         account.update(text)
       end
       write_last_id(r.id)

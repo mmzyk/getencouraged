@@ -8,7 +8,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'blacklist.rb'))
 class Repost
   
   def initialize
-    @db = nil
+    @db = initialize_mongo
   end  
   
   # What this class does: Hits the twitter api for the account specified and pulls the replies
@@ -23,24 +23,16 @@ class Repost
   #should I insert a primary key factory (see mongo ruby driver on github) that uses tweet numbers?
   #then I could look up by tweet number -> or a simpler thing to do would just to be a primary key factory that always increments by one
   
-  def open_mongo
-    #if @db not nil
-    #  @db
-    #else  
-    #  @db = Connection.new.db('twitter_tweets') 
+  def initialize_mongo
+    db = Connection.new.db('twitter_tweets') 
   end  
   
   def open_id_collection
-    #if @ids not nil
-    #  @ids
-    #else
-    #  @ids = open_mongo.collection('ids')
-    #end
+    ids = @db.collection('ids')
   end  
   
   def read_last_id
-    db = Connection.new.db('twitter_tweets')
-    ids = db.collection('ids')
+    ids = open_id_collection
     
     #this works, but a capped collection might be better, then the space remains constant
     id = ids.find_one({}, :sort => [{'id' => -1}] )
@@ -53,15 +45,14 @@ class Repost
   end  
 
   def write_last_id(id)
-    db = Connection.new.db('twitter_tweets')
-    ids = db.collection('ids')
+    ids = open_id_collection
     ids.insert('id' => id)
   end  
 
-  def write_tweets(tweet)
+  def save_tweets(tweet)
     
     # save tweets to mongodb
-    db = Connection.new.db('twitter_tweets')
+    #db = Connection.new.db('twitter_tweets')
   end  
 
   def get_replies(id, account)

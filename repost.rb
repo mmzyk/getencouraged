@@ -11,6 +11,8 @@ class Repost
   
   def initialize
     @db = initialize_mongo
+    @config = Configuration.read_config
+    @blacklist = Blacklist.new
   end  
   
   def initialize_mongo
@@ -30,7 +32,6 @@ class Repost
     id = ids_collection.find_one
     
     last_id = nil
-    
     if id != nil
       last_id = id['id']
     end    
@@ -67,30 +68,31 @@ class Repost
     retweets
   end
 
-  def format_text(tweet_text, user_screen_name, config_username, blacklist)
-    text = blacklist.strip_username(tweet_text, config_username)
-    text = blacklist.strip_unwanted_phrases(text)
+  def format_text(tweet_text, user_screen_name)
+    text = @blacklist.strip_username(tweet_text, @config['username'])
+    text = @blacklist.strip_unwanted_phrases(text)
     text << ' (@' + user_screen_name + ')'
-    text
+  end  
+
+  def twitter_account
+    client = Twitter::HTTPAuth.new(@config['username'], @config['password'])
+    account = Twitter::Base.new(client)
   end  
 
   def repost_tweets
     id = read_last_id
-    config = Configuration.read_config
-    client = Twitter::HTTPAuth.new(config['username'],config['password'])
-    account = Twitter::Base.new(client)
-    blacklist = Blacklist.new
+    account = twitter_account
     replies = get_replies(id, account)
-    retweets = get_replies_to_retweet(replies, config['number_to_tweet'])
+    retweets = get_replies_to_retweet(replies, @config['number_to_tweet'])
     
     retweets.reverse! # Twitter returns replies from newest to oldest, but want to retweet the oldest first
     
     retweets.each do |tweet|
-      if blacklist.eligible_to_retweet(tweet.text, tweet.user.screen_name)
-        text = format_text(tweet.text, tweet.user.screen_name, config['username'], blacklist)
+      if @blacklist.eligible_to_retweet(tweet.text, tweet.user.screen_name)
+        text = format_text(tweet.text, tweet.user.screen_name)
         save_tweet(tweet)
         account.update(text)
-      end
+      end  
       write_last_id(r.id)
     end
     

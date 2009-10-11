@@ -1,16 +1,15 @@
 require 'rubygems'
 require 'twitter'
+
 require File.expand_path(File.join(File.dirname(__FILE__), 'configuration.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), 'blacklist.rb'))
 
 class Repost
-  # What this class does: Hits the twitter api for the account specified and pulls the replies
-  # sent to that account and retweets them, appling some new formatting, from the account
-  # The class will write the id of the last reply to a file and check for the file
-  # each time the class is run, using the id it finds as a param to the twitter api
-  # so only replies since that id are returned
-  # Author -- Mark Mzyk
   
+  def initialize
+    @config = Configuration.read_config
+    @blacklist = Blacklist.new
+  end
   
   def read_last_id
     last_id = nil
@@ -46,23 +45,28 @@ class Repost
     retweets
   end
 
+  def format_text(tweet_text, user_screen_name)
+    text = @blacklist.strip_username(tweet_text, @config['username'])
+    text = @blacklist.strip_unwanted_phrases(text)
+    text << ' (@' + user_screen_name + ')'
+  end  
+
+  def twitter_account
+    client = Twitter::HTTPAuth.new(@config['username'], @config['password'])
+    account = Twitter::Base.new(client)
+  end
+
   def repost_tweets
     id = read_last_id
-    config = Configuration.read_config
-    client = Twitter::HTTPAuth.new(config['username'],config['password'])
-    account = Twitter::Base.new(client)
-    blacklist = Blacklist.new
+    account = twitter_account
     replies = get_replies(id, account)
-    retweets = get_replies_to_retweet(replies, config['number_to_tweet'])
+    retweets = get_replies_to_retweet(replies, @config['number_to_tweet'])
 
-    # Twitter returns replies from newest to oldest, but want to retweet the oldest first
-    retweets.reverse!
+    retweets.reverse! # Twitter returns replies from newest to oldest, but want to retweet the oldest first
 
-    retweets.each do |r|
-      if blacklist.eligible_to_retweet(r.text, r.user.screen_name)
-        text = blacklist.strip_username(r.text, config['username'])
-        text = blacklist.strip_unwanted_phrases(text)
-        text << ' (@' + r.user.screen_name + ')'
+    retweets.each do |tweet|
+      if @blacklist.eligible_to_retweet(tweet.text, tweet.user.screen_name)
+        text = format_text(tweet.text, tweet.user.screen_name)
         account.update(text)
       end
       write_last_id(r.id)

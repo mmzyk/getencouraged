@@ -1,4 +1,4 @@
-require 'repost'
+require 'repost_file'
 require 'test/unit'
 require 'mocha'
 

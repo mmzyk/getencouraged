@@ -69,7 +69,7 @@ class Repost
         text = format_text(tweet.text, tweet.user.screen_name)
         account.update(text)
       end
-      write_last_id(r.id)
+      write_last_id(tweet.id)
     end
     
   end  
